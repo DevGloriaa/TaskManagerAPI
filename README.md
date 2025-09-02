@@ -40,13 +40,13 @@ It provides endpoints to create, update, delete, and retrieve tasks — ideal fo
 
 ## API Endpoints
 
-| Method | Endpoint            | Description       |
-|--------|---------------------|-------------------|
-| GET    | `/api/tasks`        | Get all tasks     |
-| GET    | `/api/tasks/{id}`   | Get a single task |
-| POST   | `/api/tasks`        | Create a new task |
-| PUT    | `/api/tasks/{id}`   | Update a task     |
-| DELETE | `/api/tasks/{id}`   | Delete a task     |
+| Method | Endpoint                 | Description       |
+|--------|--------------------------|-------------------|
+| GET    | `/tasks/getalltasks`     | Get all tasks     |
+| GET    | `/tasks/gettask{id}`     | Get a single task |
+| POST   | `/tasks/createtask`      | Create a new task |
+| PUT    | `/tasks/updatetask{id}`  | Update a task     |
+| DELETE | `/tasks/deletetask{id}`  | Delete a task     |
 
 
 
