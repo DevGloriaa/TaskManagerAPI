@@ -5,7 +5,10 @@ import com.example.taskmanagerapi.exceptions.HandleUserDoesNotExistException;
 import com.example.taskmanagerapi.model.User;
 import com.example.taskmanagerapi.repository.UserRepository;
 import com.example.taskmanagerapi.service.UserService;
+import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+@Service
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
@@ -23,9 +26,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User login(LoginDto dto) {
-        User existing = userRepository.findByEmailIgnoreCase(dto.getUsername())
+    public boolean login(LoginDto loginDto) {
+        User user = userRepository.findByUsername(loginDto.getUsername())
                 .orElseThrow(() -> new HandleUserDoesNotExistException("User does not exist"));
-        return existing;
+        return loginDto.getPassword().equals(user.getPassword());
     }
+
 }
