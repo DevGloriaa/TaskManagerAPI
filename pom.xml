@@ -48,7 +48,10 @@
             <artifactId>mongodb-driver-sync</artifactId>
             <version>5.5.1</version> <!-- Latest stable -->
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
