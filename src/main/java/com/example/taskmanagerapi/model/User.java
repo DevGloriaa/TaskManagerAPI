@@ -31,4 +31,6 @@ public class User {
     @NotBlank
     @Size(min = 8, max = 10)
     private String password;
+
+    boolean isverified = true;
 }
