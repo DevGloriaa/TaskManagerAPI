@@ -80,6 +80,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean resendOtp(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email is already verified or registered!");
+        }
+        String otp = otpService.generateOtp(email);
+        emailService.sendOtpEmail(email, otp);
+        return true;
+    }
+
+
+    @Override
     public boolean login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("User does not exist"));

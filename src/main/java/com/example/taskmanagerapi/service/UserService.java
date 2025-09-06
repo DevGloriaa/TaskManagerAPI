@@ -8,4 +8,6 @@ public interface UserService {
     String registration(UserRegistrationRequest request);
     boolean verifyOtp(String email, String otpCode);
     boolean login(LoginDto loginDto);
+    boolean resendOtp(String email);
+
 }

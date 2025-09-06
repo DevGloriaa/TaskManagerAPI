@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -33,6 +35,14 @@ public class UserController {
         userService.verifyOtp(request.getEmail(), request.getOtp());
         return ResponseEntity.ok("Email verified successfully!");
     }
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<String> resendOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        userService.resendOtp(email);
+        return ResponseEntity.ok("OTP resent successfully!");
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginDto loginDto) {
