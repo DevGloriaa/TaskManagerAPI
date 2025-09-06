@@ -7,13 +7,13 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Document(collection = "users")
 public class User {
     @Id
@@ -29,8 +29,8 @@ public class User {
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 10)
+    @Size(min = 8, max = 20)
     private String password;
 
-    boolean isverified = true;
+    boolean isverified = false;
 }
