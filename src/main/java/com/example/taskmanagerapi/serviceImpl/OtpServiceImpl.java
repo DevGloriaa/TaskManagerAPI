@@ -4,6 +4,7 @@ import com.example.taskmanagerapi.model.Otp;
 import com.example.taskmanagerapi.repository.OtpRepository;
 import com.example.taskmanagerapi.service.OtpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class OtpServiceImpl implements OtpService {
 
     @Autowired
     private OtpRepository otpRepository;
+
 
     @Override
     public String generateOtp(String email) {

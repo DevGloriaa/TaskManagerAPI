@@ -21,7 +21,6 @@ public class User {
 
     private String id;
     @NotBlank
-    @Indexed(unique = true)
     private String username;
 
     @NotBlank
