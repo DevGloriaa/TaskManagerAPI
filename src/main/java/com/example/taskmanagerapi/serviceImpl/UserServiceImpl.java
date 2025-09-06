@@ -13,17 +13,23 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
     public UserServiceImpl(UserRepository userRepository) {
+
         this.userRepository = userRepository;
     }
+
+
     @Override
     public User registration(User user) {
         User newUser = new User();
         newUser.setUsername(user.getUsername());
         newUser.setEmail(user.getEmail());
         newUser.setPassword(user.getPassword());
+        newUser.setIsverified(false);
 
-        return newUser;
+
+        return userRepository.save(newUser);
     }
+
 
     @Override
     public boolean login(LoginDto loginDto) {
