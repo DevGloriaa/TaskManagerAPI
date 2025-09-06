@@ -7,6 +7,7 @@ import com.example.taskmanagerapi.repository.UserRepository;
 import com.example.taskmanagerapi.service.EmailService;
 import com.example.taskmanagerapi.service.OtpService;
 import com.example.taskmanagerapi.service.UserService;
+import com.example.taskmanagerapi.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,10 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final OtpService otpService;
     private final EmailService emailService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
 
     // Temporary storage for pending users until they verify
     private final Map<String, String> pendingUsernames = new HashMap<>();
@@ -91,14 +96,18 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean login(LoginDto loginDto) {
+    public String login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new RuntimeException("User does not exist"));
 
         if (!user.isIsverified()) {
-            throw new RuntimeException("Your email has not been verified!");
+            throw new RuntimeException("User email not verified!");
         }
 
-        return passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
-    }
+        boolean passwordMatches = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+        if (!passwordMatches) {
+            throw new RuntimeException("Invalid credentials!");
+        }
+        return jwtUtil.generateToken(user.getEmail());
+        }
 }

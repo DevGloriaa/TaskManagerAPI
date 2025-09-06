@@ -1,8 +1,10 @@
 package com.example.taskmanagerapi.controller;
 
-
 import com.example.taskmanagerapi.model.Task;
 import com.example.taskmanagerapi.service.TaskService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,32 +13,37 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private final TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
+    @PostMapping("/createtask")
+    public ResponseEntity<Task> createTask(@RequestBody Task task, HttpServletRequest request) {
+        String userEmail = (String) request.getUserPrincipal().getName();
+        return ResponseEntity.ok(taskService.createTask(task, userEmail));
     }
 
     @GetMapping("/getalltasks")
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    public ResponseEntity<List<Task>> getTasks(HttpServletRequest request) {
+        String userEmail = (String) request.getUserPrincipal().getName();
+        return ResponseEntity.ok(taskService.getTasks(userEmail));
     }
-
     @GetMapping("/gettask{id}")
-    public Task getTaskById(@PathVariable String id) {
-        return taskService.getTaskById(id);
-    }
-    @PostMapping("/createtask")
-    public Task createTask(@RequestBody Task task) {
-        return taskService.createTask(task);
+    public ResponseEntity<Task> getTaskById(@PathVariable String id, HttpServletRequest request) {
+        String userEmail = (String) request.getUserPrincipal().getName();
+        Task task = taskService.getTaskById(id, userEmail);
+        return ResponseEntity.ok(task);
     }
 
     @PutMapping("/updatetask{id}")
-    public Task updateTask(@PathVariable String id, @RequestBody Task updatedTask) {
-        return taskService.updateTask(id, updatedTask);
+    public ResponseEntity<Task> updateTask(@PathVariable String id, @RequestBody Task task, HttpServletRequest request) {
+        String userEmail = (String) request.getUserPrincipal().getName();
+        return ResponseEntity.ok(taskService.updateTask(id, task, userEmail));
     }
+
     @DeleteMapping("/deletetask{id}")
-    public void deleteTask(@PathVariable String id) {
-        taskService.deleteTask(id);
+    public ResponseEntity<String> deleteTask(@PathVariable String id, HttpServletRequest request) {
+        String userEmail = (String) request.getUserPrincipal().getName();
+        taskService.deleteTask(id, userEmail);
+        return ResponseEntity.ok("Task deleted successfully!");
     }
 }

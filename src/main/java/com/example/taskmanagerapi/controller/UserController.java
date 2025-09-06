@@ -43,11 +43,14 @@ public class UserController {
         return ResponseEntity.ok("OTP resent successfully!");
     }
 
-
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginDto loginDto) {
-        boolean success = userService.login(loginDto);
-        if (success) return ResponseEntity.ok("Login successful!");
-        return ResponseEntity.status(401).body("Invalid credentials!");
+    public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
+        try {
+            String token = userService.login(loginDto);
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(401).body(Map.of("error", ex.getMessage()));
+        }
     }
+
 }

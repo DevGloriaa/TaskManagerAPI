@@ -27,5 +27,8 @@ public class Task {
 
     @NotBlank
     private String description;
-    private String status = "pending";
+    private boolean completed;
+
+
+    private String userEmail;
 }

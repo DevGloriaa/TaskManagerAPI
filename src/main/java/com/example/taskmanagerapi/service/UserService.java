@@ -7,7 +7,7 @@ import com.example.taskmanagerapi.model.User;
 public interface UserService {
     String registration(UserRegistrationRequest request);
     boolean verifyOtp(String email, String otpCode);
-    boolean login(LoginDto loginDto);
+    String login(LoginDto loginDto);
     boolean resendOtp(String email);
 
 }
