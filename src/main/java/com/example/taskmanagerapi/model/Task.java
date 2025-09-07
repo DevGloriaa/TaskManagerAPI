@@ -1,14 +1,14 @@
 package com.example.taskmanagerapi.model;
 
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -16,9 +16,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "tasks")
 public class Task {
     @Id
-//  @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-
     private String id;
 
     @NotBlank
@@ -27,8 +24,10 @@ public class Task {
 
     @NotBlank
     private String description;
-    private boolean completed;
 
+    private boolean completed;
+    private String priority;
+    private LocalDate dueDate;
 
     private String userEmail;
 }
