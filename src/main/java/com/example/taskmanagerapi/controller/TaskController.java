@@ -19,18 +19,23 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @PostMapping
+    @PostMapping("/createtask")
     public ResponseEntity<Task> createTask(@RequestBody TaskRequest request,
                                            HttpServletRequest httpRequest) {
         String userEmail = httpRequest.getUserPrincipal().getName();
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
-        task.setUserEmail(userEmail);
+        task.setPriority(request.getPriority());
+        task.setCompleted(request.isCompleted());
+        task.setDueDate(request.getDueDate());
         task.setCategoryId(request.getCategoryId());
+        task.setUserEmail(userEmail);
+
         return ResponseEntity.ok(taskService.createTask(task, userEmail));
     }
-    @GetMapping
+
+    @GetMapping("/gettasks")
     public ResponseEntity<List<Task>> getTasks(HttpServletRequest httpRequest) {
         String userEmail = httpRequest.getUserPrincipal().getName();
         return ResponseEntity.ok(taskService.getTasks(userEmail));

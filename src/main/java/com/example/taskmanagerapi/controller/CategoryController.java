@@ -27,13 +27,16 @@ public class CategoryController {
     public ResponseEntity<List<Category>> getCategories(@PathVariable String userEmail) {
         return ResponseEntity.ok(categoryService.getCategories(userEmail));
     }
-
+    @GetMapping("/{userEmail}/name/{categoryName}")
+    public ResponseEntity<Category> getCategoryByName(@PathVariable String userEmail,
+                                                      @PathVariable String categoryName) {
+        return ResponseEntity.ok(categoryService.getCategoryByName(categoryName, userEmail));
+    }
     @GetMapping("/{userEmail}/{categoryId}")
     public ResponseEntity<Category> getCategoryById(@PathVariable String userEmail,
                                                     @PathVariable String categoryId) {
         return ResponseEntity.ok(categoryService.getCategoryById(categoryId, userEmail));
     }
-
     @DeleteMapping("/{userEmail}/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String userEmail,
                                                @PathVariable String categoryId) {

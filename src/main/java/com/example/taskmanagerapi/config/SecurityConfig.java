@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/users/**", "/otp/**")
                 .permitAll()
-                .requestMatchers("/tasks/**")
+                .requestMatchers("/tasks/**","/categories/**")
                 .authenticated()
                 .and()
                 .sessionManagement()
