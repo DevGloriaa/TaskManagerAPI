@@ -1,11 +1,15 @@
 package com.example.taskmanagerapi.serviceImpl;
 
+import com.example.taskmanagerapi.dto.TaskFilterRequest;
 import com.example.taskmanagerapi.model.Task;
 import com.example.taskmanagerapi.repository.TaskRepository;
 import com.example.taskmanagerapi.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,6 +28,7 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getTasks(String userEmail) {
         return taskRepository.findByUserEmail(userEmail);
     }
+
     @Override
     public Task getTaskById(String taskId, String userEmail) {
         Task task = taskRepository.findById(taskId)
@@ -38,29 +43,54 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task updateTask(String taskId, Task task, String userEmail) {
-        Task existingTask = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
-
-        if (!existingTask.getUserEmail().equals(userEmail)) {
-            throw new RuntimeException("Unauthorized");
-        }
+        Task existingTask = getTaskById(taskId, userEmail);
 
         existingTask.setTitle(task.getTitle());
         existingTask.setDescription(task.getDescription());
+        existingTask.setPriority(task.getPriority());
         existingTask.setCompleted(task.isCompleted());
+        existingTask.setDueDate(task.getDueDate());
 
         return taskRepository.save(existingTask);
     }
 
     @Override
     public void deleteTask(String taskId, String userEmail) {
-        Task existingTask = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+        Task existingTask = getTaskById(taskId, userEmail);
+        taskRepository.delete(existingTask);
+    }
 
-        if (!existingTask.getUserEmail().equals(userEmail)) {
-            throw new RuntimeException("Unauthorized");
+    @Override
+    public List<Task> searchTasks(TaskFilterRequest filterRequest) {
+        String userEmail = filterRequest.getUserEmail();
+        Boolean completed = filterRequest.getCompleted();
+        String priority = filterRequest.getPriority();
+        LocalDate dueDate = filterRequest.getDueDate();
+
+
+        Date startOfDay = null;
+        Date endOfDay = null;
+        if (dueDate != null) {
+            startOfDay = Date.from(dueDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            endOfDay = Date.from(dueDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
 
-        taskRepository.delete(existingTask);
+        if (completed != null && priority != null && dueDate != null) {
+            return taskRepository.findByUserEmailAndCompletedAndPriorityAndDueDateBetween(userEmail, completed, priority, startOfDay, endOfDay);
+        } else if (completed != null && priority != null) {
+            return taskRepository.findByUserEmailAndCompletedAndPriority(userEmail, completed, priority);
+        } else if (completed != null && dueDate != null) {
+            return taskRepository.findByUserEmailAndCompletedAndDueDateBetween(userEmail, completed, startOfDay, endOfDay);
+        } else if (priority != null && dueDate != null) {
+            return taskRepository.findByUserEmailAndPriorityAndDueDateBetween(userEmail, priority, startOfDay, endOfDay);
+        } else if (completed != null) {
+            return taskRepository.findByUserEmailAndCompleted(userEmail, completed);
+        } else if (priority != null) {
+            return taskRepository.findByUserEmailAndPriority(userEmail, priority);
+        } else if (dueDate != null) {
+            return taskRepository.findByUserEmailAndDueDateBetween(userEmail, startOfDay, endOfDay);
+        } else {
+            return taskRepository.findByUserEmail(userEmail);
+        }
     }
 }

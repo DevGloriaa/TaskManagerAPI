@@ -54,33 +54,11 @@ public class TaskController {
         taskService.deleteTask(id, userEmail);
         return ResponseEntity.ok("Task deleted successfully!");
     }
-
     @PostMapping("/search")
-    public List<Task> searchTasks(@RequestBody TaskFilterRequest filterRequest) {
-        String userEmail = filterRequest.getUserEmail();
-        Boolean completed = filterRequest.getCompleted();
-        String priority = filterRequest.getPriority();
-        LocalDate dueDate = filterRequest.getDueDate();
-
-
-
-        if (completed != null && priority != null && dueDate != null) {
-            return taskRepository.findByUserEmailAndCompletedAndPriorityAndDueDate(userEmail, completed, priority, dueDate);
-        } else if (completed != null && priority != null) {
-            return taskRepository.findByUserEmailAndCompletedAndPriority(userEmail, completed, priority);
-        } else if (completed != null && dueDate != null) {
-            return taskRepository.findByUserEmailAndCompletedAndDueDate(userEmail, completed, dueDate);
-        } else if (priority != null && dueDate != null) {
-            return taskRepository.findByUserEmailAndPriorityAndDueDate(userEmail, priority, dueDate);
-        } else if (completed != null) {
-            return taskRepository.findByUserEmailAndCompleted(userEmail, completed);
-        } else if (priority != null) {
-            return taskRepository.findByUserEmailAndPriority(userEmail, priority);
-        } else if (dueDate != null) {
-            return taskRepository.findByUserEmailAndDueDate(userEmail, dueDate);
-        } else {
-            return taskRepository.findByUserEmail(userEmail);
-        }
+    public ResponseEntity<List<Task>> searchTasks(@RequestBody TaskFilterRequest filterRequest) {
+        List<Task> tasks = taskService.searchTasks(filterRequest);
+        return ResponseEntity.ok(tasks);
     }
+
 
 }

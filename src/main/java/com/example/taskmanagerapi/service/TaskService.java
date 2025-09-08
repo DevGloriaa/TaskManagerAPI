@@ -1,5 +1,6 @@
 package com.example.taskmanagerapi.service;
 
+import com.example.taskmanagerapi.dto.TaskFilterRequest;
 import com.example.taskmanagerapi.model.Task;
 
 import java.util.List;
@@ -10,4 +11,5 @@ public interface TaskService {
     Task getTaskById(String taskId, String userEmail);
     Task updateTask(String taskId, Task task, String userEmail);
     void deleteTask(String taskId, String userEmail);
+    List<Task> searchTasks(TaskFilterRequest filterRequest);
 }
