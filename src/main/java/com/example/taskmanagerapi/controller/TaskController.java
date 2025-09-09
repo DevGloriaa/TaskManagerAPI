@@ -64,10 +64,22 @@ public class TaskController {
         taskService.deleteTask(id, userEmail);
         return ResponseEntity.ok("Task deleted successfully!");
     }
-
+    @GetMapping("/category/name/{categoryName}")
+    public ResponseEntity<List<Task>> getTasksByCategoryName(@PathVariable String categoryName,
+                                                             HttpServletRequest httpRequest) {
+        String userEmail = httpRequest.getUserPrincipal().getName();
+        return ResponseEntity.ok(taskService.getTasksByCategoryName(categoryName, userEmail));
+    }
 
     @PostMapping("/search")
     public ResponseEntity<List<Task>> searchTasks(@RequestBody TaskFilterRequest filterRequest) {
         return ResponseEntity.ok(taskService.searchTasks(filterRequest));
     }
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<Task>> getTasksByCategory(@PathVariable String categoryId,
+                                                         HttpServletRequest httpRequest) {
+        String userEmail = httpRequest.getUserPrincipal().getName();
+        return ResponseEntity.ok(taskService.getTasksByCategory(categoryId, userEmail));
+    }
+
 }

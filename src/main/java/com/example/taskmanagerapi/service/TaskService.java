@@ -12,4 +12,6 @@ public interface TaskService {
     Task updateTask(String taskId, Task task, String userEmail);
     void deleteTask(String taskId, String userEmail);
     List<Task> searchTasks(TaskFilterRequest filterRequest);
+    List<Task> getTasksByCategory(String categoryId, String userEmail);
+    List<Task> getTasksByCategoryName(String categoryName, String userEmail);
 }

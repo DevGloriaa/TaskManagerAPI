@@ -1,7 +1,9 @@
 package com.example.taskmanagerapi.serviceImpl;
 
 import com.example.taskmanagerapi.dto.TaskFilterRequest;
+import com.example.taskmanagerapi.model.Category;
 import com.example.taskmanagerapi.model.Task;
+import com.example.taskmanagerapi.repository.CategoryRepository;
 import com.example.taskmanagerapi.repository.TaskRepository;
 import com.example.taskmanagerapi.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Override
     public Task createTask(Task task, String userEmail) {
@@ -52,6 +57,20 @@ public class TaskServiceImpl implements TaskService {
         existingTask.setDueDate(task.getDueDate());
 
         return taskRepository.save(existingTask);
+    }
+    @Override
+    public List<Task> getTasksByCategory(String categoryId, String userEmail) {
+        return taskRepository.findByCategoryIdAndUserEmail(categoryId, userEmail);
+    }
+
+
+    @Override
+    public List<Task> getTasksByCategoryName(String categoryName, String userEmail) {
+
+        Category category = categoryRepository.findByNameAndUserEmail(categoryName, userEmail)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        return taskRepository.findByCategoryIdAndUserEmail(category.getId(), userEmail);
     }
 
     @Override

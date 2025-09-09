@@ -25,4 +25,8 @@ public interface TaskRepository extends MongoRepository<Task, String> {
     List<Task> findByUserEmailAndCompletedAndPriorityAndDueDateBetween(String userEmail, Boolean completed, String priority, Date start, Date end);
 
     List<Task> findByUserEmailAndCompletedAndPriority(String userEmail, Boolean completed, String priority);
+
+    List<Task> findByCategoryIdAndUserEmail(String categoryId, String userEmail);
+
+
 }
