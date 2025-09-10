@@ -28,19 +28,31 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
     @PostMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestBody OtpVerificationRequest request) {
+    public ResponseEntity<Map<String,Object>> verifyUser(@RequestBody OtpVerificationRequest request) {
         userService.verifyOtp(request.getEmail(), request.getOtp());
-        return ResponseEntity.ok("Email verified successfully!");
+        Map<String,Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Email verified successfully!");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/resend-otp")
-    public ResponseEntity<String> resendOtp(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String,Object>> resendOtp(@RequestBody Map<String, String> request) {
         String email = request.get("email");
-        userService.resendOtp(email);
-        return ResponseEntity.ok("OTP resent successfully!");
+        Map<String, Object> response = new HashMap<>();
+        try {
+            userService.resendOtp(email);
+            response.put("success", true);
+            response.put("message", "OTP resent successfully!");
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(response);
     }
+
+
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
