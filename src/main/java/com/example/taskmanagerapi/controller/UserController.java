@@ -52,8 +52,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
-
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
         try {

@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
         boolean passwordMatches = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
         if (!passwordMatches) {
-            throw new RuntimeException("Invalid credentials!");
+            throw new RuntimeException("Wrong username or password");
         }
 
         return jwtUtil.generateToken(user.getEmail());
