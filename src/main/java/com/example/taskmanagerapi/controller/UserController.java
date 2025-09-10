@@ -6,11 +6,9 @@ import com.example.taskmanagerapi.dto.UserRegistrationRequest;
 import com.example.taskmanagerapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -25,10 +23,11 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegistrationRequest request) {
-        userService.registration(request);
-        return ResponseEntity.ok("User registered successfully! OTP sent to email.");
+    public ResponseEntity<Map<String, Object>> registration(@RequestBody UserRegistrationRequest request) {
+        Map<String, Object> response = userService.registration(request);
+        return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestBody OtpVerificationRequest request) {

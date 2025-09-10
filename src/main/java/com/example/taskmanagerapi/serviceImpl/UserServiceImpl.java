@@ -22,78 +22,97 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final OtpService otpService;
     private final EmailService emailService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
 
-    // Temporary storage for pending users until they verify
-    private final Map<String, String> pendingUsernames = new HashMap<>();
-    private final Map<String, String> pendingPasswords = new HashMap<>();
+    private final Map<String, UserRegistrationRequest> pendingUsers = new HashMap<>();
+    private final Map<String, String> pendingOtps = new HashMap<>();
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            BCryptPasswordEncoder passwordEncoder,
                            OtpService otpService,
-                           EmailService emailService) {
+                           EmailService emailService,
+                           JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.otpService = otpService;
         this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
-    public String registration(UserRegistrationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already in use!");
+    public Map<String, Object> registration(UserRegistrationRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (request.getUsername() == null || request.getEmail() == null || request.getPassword() == null) {
+            response.put("success", false);
+            response.put("message", "All fields are required");
+            return response;
         }
 
-        pendingUsernames.put(request.getEmail(), request.getUsername());
-        pendingPasswords.put(request.getEmail(), request.getPassword());
+        if (userRepository.existsByEmail(request.getEmail())) {
+            response.put("success", false);
+            response.put("message", "Email already registered");
+            return response;
+        }
+
 
         String otp = otpService.generateOtp(request.getEmail());
+
+        pendingUsers.put(request.getEmail(), request);
+        pendingOtps.put(request.getEmail(), otp);
+
+
         emailService.sendOtpEmail(request.getEmail(), otp);
 
-        return "OTP sent. Verify your email to complete registration.";
+        response.put("success", true);
+        response.put("message", "OTP sent to email. Complete verification to register.");
+        return response;
     }
 
     @Override
     public boolean verifyOtp(String email, String otpCode) {
-        if (!otpService.validateOtp(email, otpCode)) {
-            throw new RuntimeException("OTP is invalid or expired!");
-        }
-
-        String username = pendingUsernames.get(email);
-        String rawPassword = pendingPasswords.get(email);
-
-        if (username == null || rawPassword == null) {
+        if (!pendingOtps.containsKey(email)) {
             throw new RuntimeException("No pending registration found for this email!");
         }
 
+        if (!pendingOtps.get(email).equals(otpCode)) {
+            throw new RuntimeException("Invalid OTP");
+        }
+
+
+        UserRegistrationRequest pending = pendingUsers.get(email);
+
+
         User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setUsername(pending.getUsername());
+        user.setEmail(pending.getEmail());
+        user.setPassword(passwordEncoder.encode(pending.getPassword()));
         user.setIsverified(true);
+
 
         userRepository.save(user);
 
-        pendingUsernames.remove(email);
-        pendingPasswords.remove(email);
+
+        pendingUsers.remove(email);
+        pendingOtps.remove(email);
 
         return true;
     }
 
     @Override
     public boolean resendOtp(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email is already verified or registered!");
+        if (!pendingUsers.containsKey(email)) {
+            throw new RuntimeException("No pending registration found for this email!");
         }
+
         String otp = otpService.generateOtp(email);
+        pendingOtps.put(email, otp);
+
         emailService.sendOtpEmail(email, otp);
         return true;
     }
-
 
     @Override
     public String login(LoginDto loginDto) {
@@ -108,6 +127,7 @@ public class UserServiceImpl implements UserService {
         if (!passwordMatches) {
             throw new RuntimeException("Invalid credentials!");
         }
+
         return jwtUtil.generateToken(user.getEmail());
-        }
+    }
 }

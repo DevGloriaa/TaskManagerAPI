@@ -1,11 +1,12 @@
 package com.example.taskmanagerapi.service;
 
+
 import com.example.taskmanagerapi.dto.LoginDto;
 import com.example.taskmanagerapi.dto.UserRegistrationRequest;
-import com.example.taskmanagerapi.model.User;
+import java.util.Map;
 
 public interface UserService {
-    String registration(UserRegistrationRequest request);
+    Map<String, Object> registration(UserRegistrationRequest request);
     boolean verifyOtp(String email, String otpCode);
     String login(LoginDto loginDto);
     boolean resendOtp(String email);
