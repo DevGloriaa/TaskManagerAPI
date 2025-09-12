@@ -56,6 +56,13 @@ public class TaskController {
         String userEmail = httpRequest.getUserPrincipal().getName();
         return ResponseEntity.ok(taskService.updateTask(id, task, userEmail));
     }
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<Task> completeTask(@PathVariable String id, HttpServletRequest request) {
+        String userEmail = request.getUserPrincipal().getName();
+        Task completedTask = taskService.markTaskAsComplete(id, userEmail);
+        return ResponseEntity.ok(completedTask);
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable String id,

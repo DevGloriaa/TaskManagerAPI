@@ -72,6 +72,19 @@ public class TaskServiceImpl implements TaskService {
 
         return taskRepository.findByCategoryIdAndUserEmail(category.getId(), userEmail);
     }
+    @Override
+    public Task markTaskAsComplete(String taskId, String userEmail) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!task.getUserEmail().equals(userEmail)) {
+            throw new RuntimeException("Forbidden: You can only complete your own tasks.");
+        }
+
+        task.setCompleted(true);
+        return taskRepository.save(task);
+    }
+
 
     @Override
     public void deleteTask(String taskId, String userEmail) {
