@@ -33,10 +33,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(String categoryId, String userEmail) {
-        return categoryRepository.findById(categoryId)
-                .filter(c -> c.getUserEmail().equals(userEmail))
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        if (!category.getUserEmail().equals(userEmail)) {
+            throw new RuntimeException("Unauthorized: You cannot access this category.");
+        }
+        return category;
     }
+
     @Override
     public void deleteCategory(String categoryId, String userEmail) {
         Category category = getCategoryById(categoryId, userEmail);
