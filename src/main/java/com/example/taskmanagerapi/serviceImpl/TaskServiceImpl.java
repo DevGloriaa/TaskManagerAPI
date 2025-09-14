@@ -85,6 +85,15 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.save(task);
     }
 
+    @Override
+    public Task toggleComplete(String taskId, String userEmail) {
+        Task task = getTaskById(taskId, userEmail);
+        task.setCompleted(!task.isCompleted());
+        return taskRepository.save(task);
+    }
+
+
+
 
     @Override
     public void deleteTask(String taskId, String userEmail) {

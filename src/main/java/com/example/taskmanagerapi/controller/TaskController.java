@@ -4,10 +4,12 @@ package com.example.taskmanagerapi.controller;
 import com.example.taskmanagerapi.dto.TaskFilterRequest;
 import com.example.taskmanagerapi.dto.TaskRequest;
 import com.example.taskmanagerapi.model.Task;
+import com.example.taskmanagerapi.model.User;
 import com.example.taskmanagerapi.service.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,13 +58,12 @@ public class TaskController {
         String userEmail = httpRequest.getUserPrincipal().getName();
         return ResponseEntity.ok(taskService.updateTask(id, task, userEmail));
     }
-    @PatchMapping("/{id}/complete")
-    public ResponseEntity<Task> completeTask(@PathVariable String id, HttpServletRequest request) {
-        String userEmail = request.getUserPrincipal().getName();
-        Task completedTask = taskService.markTaskAsComplete(id, userEmail);
-        return ResponseEntity.ok(completedTask);
+    @PatchMapping("/{id}/toggle-complete")
+    public ResponseEntity<Task> toggleComplete(@PathVariable String id, HttpServletRequest httpRequest) {
+        String userEmail = httpRequest.getUserPrincipal().getName();
+        Task updatedTask = taskService.toggleComplete(id, userEmail);
+        return ResponseEntity.ok(updatedTask);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable String id,

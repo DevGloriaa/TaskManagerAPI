@@ -14,4 +14,7 @@ public interface TaskService {
     Task markTaskAsComplete(String taskId, String userEmail);
     void deleteTask(String taskId, String userEmail);
     List<Task> searchTasks(TaskFilterRequest filterRequest);
+    Task toggleComplete(String taskId, String userEmail);
+
+
 }
