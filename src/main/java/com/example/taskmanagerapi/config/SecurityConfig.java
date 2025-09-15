@@ -29,10 +29,9 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/users/**", "/otp/**")
-                .permitAll()
-                .requestMatchers("/tasks/**", "/categories/**")
-                .authenticated()
+                .requestMatchers("/users/**", "/otp/**", "/actuator/health").permitAll()
+                .requestMatchers("/tasks/**", "/categories/**").authenticated()
+                .anyRequest().authenticated() 
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
