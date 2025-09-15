@@ -7,7 +7,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ServerServiceImpl {
 
-    private final RestTemplate restTemplate = new RestTemplate();
     private final String serverUrl = "https://taskmanagerapi-1-142z.onrender.com/users/ping";
 
     private final RestTemplate restTemplate;
