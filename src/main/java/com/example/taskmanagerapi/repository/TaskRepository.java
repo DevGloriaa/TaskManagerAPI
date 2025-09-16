@@ -3,6 +3,7 @@ package com.example.taskmanagerapi.repository;
 import com.example.taskmanagerapi.model.Task;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public interface TaskRepository extends MongoRepository<Task, String> {
 
     List<Task> findByUserEmailAndPriority(String userEmail, String priority);
 
+    List<Task> findByDueDateBetween(LocalDate start, LocalDate end);
 
     List<Task> findByUserEmailAndDueDateBetween(String userEmail, Date start, Date end);
 
