@@ -35,6 +35,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public List<Task> getTodayTasks(String userEmail) {
+        LocalDate today = LocalDate.now();
+
+        Date startOfDay = Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date endOfDay = Date.from(today.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        return taskRepository.findByUserEmailAndDueDateBetween(userEmail, startOfDay, endOfDay);
+    }
+
+    @Override
     public Task getTaskById(String taskId, String userEmail) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));

@@ -72,10 +72,12 @@ public class TaskController {
         return ResponseEntity.ok(updatedTask);
     }
     @GetMapping("/today")
-    public List<Task> getTodayTasks() {
-        LocalDate today = LocalDate.now();
-        return taskRepository.findByDate(today);
+    public ResponseEntity<List<Task>> getTodayTasks(HttpServletRequest httpRequest) {
+        String userEmail = httpRequest.getUserPrincipal().getName();
+        return ResponseEntity.ok(taskService.getTodayTasks(userEmail));
     }
+
+
 
 
     @DeleteMapping("/{id}")
