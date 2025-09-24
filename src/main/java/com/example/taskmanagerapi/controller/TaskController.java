@@ -8,6 +8,8 @@ import com.example.taskmanagerapi.model.User;
 import com.example.taskmanagerapi.service.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -89,5 +91,16 @@ public class TaskController {
         String userEmail = httpRequest.getUserPrincipal().getName();
         return ResponseEntity.ok(taskService.getTasksByCategory(categoryId, userEmail));
     }
+    @GetMapping("/export/ics")
+    public ResponseEntity<byte[]> exportIcs(@RequestParam String userEmail) {
+        String icsContent = taskService.exportTasksToICS(userEmail);
+        byte[] bytes = icsContent.getBytes();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=optimus-tasks.ics")
+                .contentType(MediaType.parseMediaType("text/calendar"))
+                .body(bytes);
+    }
+
 
 }

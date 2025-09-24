@@ -91,6 +91,31 @@ public class TaskServiceImpl implements TaskService {
         task.setCompleted(!task.isCompleted());
         return taskRepository.save(task);
     }
+    @Override
+    public String exportTasksToICS(String userEmail) {
+        List<Task> tasks = taskRepository.findByUserEmail(userEmail);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("BEGIN:VCALENDAR\n");
+        sb.append("VERSION:2.0\n");
+        sb.append("PRODID:-//Optimus Task Manager//EN\n");
+
+        for (Task task : tasks) {
+            sb.append("BEGIN:VEVENT\n");
+            sb.append("SUMMARY:").append(task.getTitle()).append("\n");
+            sb.append("DESCRIPTION:").append(task.getDescription()).append("\n");
+
+            if (task.getDueDate() != null) {
+                sb.append("DTSTART:").append(task.getDueDate().atTime(6, 0).toString().replace("-", "").replace(":", "")).append("Z\n");
+                sb.append("DTEND:").append(task.getDueDate().atTime(23, 59).toString().replace("-", "").replace(":", "")).append("Z\n");
+            }
+
+            sb.append("END:VEVENT\n");
+        }
+
+        sb.append("END:VCALENDAR");
+        return sb.toString();
+    }
 
 
 
