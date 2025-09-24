@@ -29,6 +29,7 @@ public class Task {
     private boolean completed;
     private String priority;
     private LocalDate dueDate;
+    private LocalDate date;
 
     private String userEmail;
     private String categoryId;

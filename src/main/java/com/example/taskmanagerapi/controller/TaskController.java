@@ -5,6 +5,7 @@ import com.example.taskmanagerapi.dto.TaskFilterRequest;
 import com.example.taskmanagerapi.dto.TaskRequest;
 import com.example.taskmanagerapi.model.Task;
 import com.example.taskmanagerapi.model.User;
+import com.example.taskmanagerapi.repository.TaskRepository;
 import com.example.taskmanagerapi.service.TaskService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,9 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @PostMapping("/createtask")
     public ResponseEntity<Task> createTask(@RequestBody TaskRequest request,
@@ -66,6 +71,12 @@ public class TaskController {
         Task updatedTask = taskService.toggleComplete(id, userEmail);
         return ResponseEntity.ok(updatedTask);
     }
+    @GetMapping("/today")
+    public List<Task> getTodayTasks() {
+        LocalDate today = LocalDate.now();
+        return taskRepository.findByDate(today);
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable String id,
