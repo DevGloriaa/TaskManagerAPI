@@ -13,4 +13,5 @@ public class TaskRequest {
     private boolean completed;
     private LocalDate dueDate;
     private String categoryId;
+
 }
