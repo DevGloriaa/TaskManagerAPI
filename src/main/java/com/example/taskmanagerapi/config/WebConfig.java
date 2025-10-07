@@ -22,18 +22,17 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
 
-                boolean isLocal = false;
-                for (String profile : env.getActiveProfiles()) {
-                    if (profile.equalsIgnoreCase("dev") || profile.equalsIgnoreCase("local")) {
-                        isLocal = true;
-                        break;
-                    }
+                String[] allowedOrigins;
+                if (env.acceptsProfiles("dev", "local")) {
+                    allowedOrigins = new String[]{
+                            "http://localhost:3000",
+                            "https://optimustask.vercel.app"
+                    };
+                } else {
+                    allowedOrigins = new String[]{
+                            "https://optimustask.vercel.app"
+                    };
                 }
-
-
-                String[] allowedOrigins = isLocal
-                        ? new String[]{"http://localhost:3000", "https://optimustask.vercel.app"}
-                        : new String[]{"https://optimustask.vercel.app"};
 
                 registry.addMapping("/**")
                         .allowedOrigins(allowedOrigins)
