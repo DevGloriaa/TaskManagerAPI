@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/users/**", "/otp/**", "/actuator/health").permitAll()
-                .requestMatchers("/tasks/**", "/categories/**").authenticated()
+                .requestMatchers("/tasks/**","/api/**", "/categories/**").authenticated()
                 .anyRequest().authenticated() 
                 .and()
                 .sessionManagement()
