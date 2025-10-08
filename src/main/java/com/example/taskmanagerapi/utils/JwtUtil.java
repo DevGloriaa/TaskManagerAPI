@@ -12,16 +12,15 @@ import java.util.Date;
 public class JwtUtil {
 
 
-    private final String secret = "YourSuperSecure256BitKeyHere1234567890!@#$";
+    private final String secret = System.getenv("JWT_SECRET") != null
+            ? System.getenv("JWT_SECRET")
+            : "SuperSecureSharedSecretForKosAndOptimus123!@";
 
-
-    private final long expiration = 1000 * 60 * 60 * 24;
-
+    private final long expiration = 1000 * 60 * 60 * 24; // 1 day
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
-
 
     public String generateToken(String email) {
         return Jwts.builder()
@@ -31,7 +30,6 @@ public class JwtUtil {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
 
     public String extractEmail(String token) {
         return Jwts.parserBuilder()
