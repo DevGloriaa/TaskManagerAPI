@@ -56,6 +56,10 @@ public class TaskServiceImpl implements TaskService {
         return task;
     }
 
+    public List<Task> getTasksByEmail(String email) {
+        return taskRepository.findByUserEmail(email);
+    }
+
     @Override
     public Task updateTask(String taskId, Task task, String userEmail) {
         Task existingTask = getTaskById(taskId, userEmail);
@@ -82,6 +86,7 @@ public class TaskServiceImpl implements TaskService {
 
         return taskRepository.findByCategoryIdAndUserEmail(category.getId(), userEmail);
     }
+
     @Override
     public Task markTaskAsComplete(String taskId, String userEmail) {
         Task task = taskRepository.findById(taskId)
