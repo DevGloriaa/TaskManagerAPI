@@ -36,12 +36,20 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getTodayTasks(String userEmail) {
-        LocalDate today = LocalDate.now();
+        List<Task> allTasks = taskRepository.findByUserEmail(userEmail);
+        System.out.println("📋 Total tasks for " + userEmail + ": " + allTasks.size());
 
-        Date startOfDay = Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Date endOfDay = Date.from(today.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        LocalDate today = LocalDate.now(ZoneId.systemDefault());
 
-        return taskRepository.findByUserEmailAndDueDateBetween(userEmail, startOfDay, endOfDay);
+        List<Task> todayTasks = allTasks.stream()
+                .filter(task -> {
+                    LocalDate dueDate = task.getDueDate();
+                    return dueDate != null && dueDate.isEqual(today);
+                })
+                .toList();
+
+        System.out.println("✅ Found " + todayTasks.size() + " task(s) for today (" + today + ")");
+        return todayTasks;
     }
 
     @Override
@@ -50,14 +58,10 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         if (!task.getUserEmail().equals(userEmail)) {
-            throw new RuntimeException("Unauthorized");
+            throw new RuntimeException("Unauthorized access.");
         }
 
         return task;
-    }
-
-    public List<Task> getTasksByEmail(String email) {
-        return taskRepository.findByUserEmail(email);
     }
 
     @Override
@@ -72,30 +76,22 @@ public class TaskServiceImpl implements TaskService {
 
         return taskRepository.save(existingTask);
     }
+
     @Override
     public List<Task> getTasksByCategory(String categoryId, String userEmail) {
         return taskRepository.findByCategoryIdAndUserEmail(categoryId, userEmail);
     }
 
-
     @Override
     public List<Task> getTasksByCategoryName(String categoryName, String userEmail) {
-
         Category category = categoryRepository.findByNameAndUserEmail(categoryName, userEmail)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-
         return taskRepository.findByCategoryIdAndUserEmail(category.getId(), userEmail);
     }
 
     @Override
     public Task markTaskAsComplete(String taskId, String userEmail) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
-
-        if (!task.getUserEmail().equals(userEmail)) {
-            throw new RuntimeException("Forbidden: You can only complete your own tasks.");
-        }
-
+        Task task = getTaskById(taskId, userEmail);
         task.setCompleted(true);
         return taskRepository.save(task);
     }
@@ -106,6 +102,7 @@ public class TaskServiceImpl implements TaskService {
         task.setCompleted(!task.isCompleted());
         return taskRepository.save(task);
     }
+
     @Override
     public String exportTasksToICS(String userEmail) {
         List<Task> tasks = taskRepository.findByUserEmail(userEmail);
@@ -121,8 +118,11 @@ public class TaskServiceImpl implements TaskService {
             sb.append("DESCRIPTION:").append(task.getDescription()).append("\n");
 
             if (task.getDueDate() != null) {
-                sb.append("DTSTART:").append(task.getDueDate().atTime(6, 0).toString().replace("-", "").replace(":", "")).append("Z\n");
-                sb.append("DTEND:").append(task.getDueDate().atTime(23, 59).toString().replace("-", "").replace(":", "")).append("Z\n");
+                String start = task.getDueDate().atTime(6, 0).toString().replace("-", "").replace(":", "") + "Z";
+                String end = task.getDueDate().atTime(23, 59).toString().replace("-", "").replace(":", "") + "Z";
+
+                sb.append("DTSTART:").append(start).append("\n");
+                sb.append("DTEND:").append(end).append("\n");
             }
 
             sb.append("END:VEVENT\n");
@@ -132,13 +132,10 @@ public class TaskServiceImpl implements TaskService {
         return sb.toString();
     }
 
-
-
-
     @Override
     public void deleteTask(String taskId, String userEmail) {
-        Task existingTask = getTaskById(taskId, userEmail);
-        taskRepository.delete(existingTask);
+        Task task = getTaskById(taskId, userEmail);
+        taskRepository.delete(task);
     }
 
     @Override
@@ -148,9 +145,9 @@ public class TaskServiceImpl implements TaskService {
         String priority = filterRequest.getPriority();
         LocalDate dueDate = filterRequest.getDueDate();
 
-
         Date startOfDay = null;
         Date endOfDay = null;
+
         if (dueDate != null) {
             startOfDay = Date.from(dueDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             endOfDay = Date.from(dueDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
