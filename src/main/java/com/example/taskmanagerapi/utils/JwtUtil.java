@@ -12,11 +12,8 @@ import java.util.Date;
 public class JwtUtil {
 
 
-    private final String secret = System.getenv("JWT_SECRET") != null
-            ? System.getenv("JWT_SECRET")
-            : "SuperSecureSharedSecretForKosAndOptimus123!@";
-
-    private final long expiration = 1000 * 60 * 60 * 24; // 1 day
+    private final String secret = "SuperSecureSharedSecretForKosAndOptimus123!@";
+    private final long expiration = 1000 * 60 * 60 * 24; 
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
@@ -38,5 +35,10 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+
+    public JwtUtil() {
+        System.out.println("🔑 [OPTIMUS] Active JWT Secret: " + secret);
     }
 }
